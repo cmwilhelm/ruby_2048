@@ -9,7 +9,7 @@ require './tile'
 class MoveHandler
 
   @@collapser = RowCollapser.new
-  
+
   def up(original)
     swapped = _swap_cols_for_rows(original)
     handled = swapped.map do |row|
@@ -42,6 +42,8 @@ class MoveHandler
     end
   end
 
+  private
+
   def _swap_cols_for_rows(grid)
     (0..3).map do |row_index|
       (0..3).map do |col_index|
@@ -53,7 +55,5 @@ class MoveHandler
   def _get_tiles(row)
     row.select { |elem| elem.kind_of?(Tile) }
   end
-    
-  private :_get_tiles, :_swap_cols_for_rows
-      
+
 end

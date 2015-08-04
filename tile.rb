@@ -2,7 +2,7 @@
 # Should have a value equal to powers of 2 >= 2^1.
 
 class Tile
-  
+
   attr_reader :value
 
   def initialize(value)

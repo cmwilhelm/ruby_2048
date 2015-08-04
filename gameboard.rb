@@ -24,6 +24,40 @@ class GameBoard
     return false
   end
 
+  def game_over?
+    @out_of_moves
+  end
+
+  def handle_input(direction)
+    old_grid = @grid
+    @grid = @@move_handler.send(direction, @grid)
+
+    if _can_move?
+      _add_random unless _grids_equal?(@grid, old_grid)
+    else
+      @out_of_moves = true
+    end
+  end
+
+  def draw
+    @grid.each_with_index do |row, row_index|
+      row.each_with_index do |elem, col_index|
+        _draw_elem(elem, row_index, col_index)
+      end
+    end
+  end
+
+  private
+
+  def _draw_elem(elem, row_index, col_index)
+    text   = elem.nil? ? '[ ]' : elem.value
+    mod    = 100
+    offset = 50
+    x_pos  = offset + mod * col_index
+    y_pos  = offset + mod * row_index
+    @@font.draw(text, x_pos, y_pos, 3, 1.0, 1.0, 0xff_ffff00)
+  end
+
   def _all_unoccupied
     unoccupied = []
     @grid.each_with_index do |row, row_index|
@@ -39,7 +73,7 @@ class GameBoard
     @grid[row][col] = Tile.new([2, 4].sample)
   end
 
-  def _grids_equal(grid_1, grid_2)
+  def _grids_equal?(grid_1, grid_2)
     grid_1.each_with_index do |row, row_index|
       row.each_with_index do |elem, col_index|
         return false if elem != grid_2[row_index][col_index]
@@ -56,41 +90,7 @@ class GameBoard
       @@move_handler.left(@grid)
     ]
 
-    futures.any? { |future| !_grids_equal(@grid, future) }
+    futures.any? { |future| !_grids_equal?(@grid, future) }
   end
 
-  def game_over?
-    @out_of_moves
-  end
-  
-  def handle(direction)
-    old_grid = @grid
-    @grid = @@move_handler.send(direction, @grid)
-
-    if _can_move?
-      _add_random unless _grids_equal(@grid, old_grid)
-    else
-      @out_of_moves = true
-    end
-  end
-
-  def draw
-    @grid.each_with_index do |row, row_index|
-      row.each_with_index do |elem, col_index|
-        _draw_elem(elem, row_index, col_index)
-      end
-    end
-  end
-
-  def _draw_elem(elem, row_index, col_index)
-    text   = elem.nil? ? '[ ]' : elem.value
-    mod    = 100
-    offset = 50
-    x_pos  = offset + mod * col_index
-    y_pos  = offset + mod * row_index
-    @@font.draw(text, x_pos, y_pos, 3, 1.0, 1.0, 0xff_ffff00)
-  end
-
-  private :_all_unoccupied, :_add_random, :_draw_elem, :_grids_equal
-  
 end
